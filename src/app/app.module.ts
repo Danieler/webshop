@@ -3,14 +3,25 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 
+import { ChartsModule } from 'ng2-charts';
+import { LinearchartComponent } from './linearchart/linearchart.component';
+import { CouponsService } from './coupons.service';
+import {HttpClientModule} from '@angular/common/http';
+
+
+
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LinearchartComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    ChartsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [CouponsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
