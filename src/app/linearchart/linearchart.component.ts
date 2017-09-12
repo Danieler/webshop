@@ -50,9 +50,9 @@ export class LinearchartComponent {
   constructor(public _cs: CouponsService){
     _cs.Coupons.subscribe(
       (data) => {
-        const mydata: any = data['coupons'];
 
-        var shops: any = _(data['coupons'])
+        //tiendas diferentes
+        let shops: any = _(data['coupons'])
           .flatten()
           .uniqBy('webshop_id')
           .map(i => _.pick(i, 'webshop_id'))
@@ -62,39 +62,52 @@ export class LinearchartComponent {
           return shop.webshop_id
         });
 
-        var couponsvalue: any = _(data['coupons'])
+        //valores de cupon diferentes
+        let couponsvalues: any = _(data['coupons'])
           .flatten()
           .uniqBy('value')
           .map(i => _.pick(i, 'value'))
           .value();
 
-        couponsvalue = couponsvalue.map(function(value) {
+        couponsvalues = couponsvalues.map(function(value) {
           return value.value
         });
 
-        this.lineChartLabels = _.sortBy(couponsvalue);
 
-        this.lineChartData.push({data: [65, 59, 80, 81, 56, 55, 40, 11, 60, 70, 33, 5, 40, 90, 60], label: shops[0]});
-        this.lineChartData.push({data: [28, 48, 40, 19, 86, 27, 90, 18, 48, 77, 9, 100, 27, 40, 70], label: shops[1]});
-        this.lineChartData.push({data: [18, 48, 77, 9, 100, 27, 40, 65, 59, 80, 81, 56, 55, 40, 11], label: shops[2]});
+        //elimino nulls y ordeno
+        couponsvalues = _.compact(_.sortBy(couponsvalues));
+
+        this.lineChartLabels = couponsvalues;//labels del grafico
+
+        //agrupo cupones por tienda y valor
+        var couponsshorted = {};
+        for(let i=0;i<shops.length; i++){
+          couponsshorted[shops[i]] = {};
+          for(let j=0;j<couponsvalues.length; j++) {
+            couponsshorted[shops[i]][couponsvalues[j]] = _.filter(data['coupons'], {value: couponsvalues[j], webshop_id: shops[i]});
+          }
+        }
 
 
-        console.log(_.filter(mydata, {webshop_id: 'macys'}));
+        //creo array como el grafico lo necesita
+        var finalDataArray = [];
+
+        for(var propts in couponsshorted) {
+          finalDataArray.push({data: [], label: propts})
+          for(var proptc in couponsshorted[propts]){
+            _.find(finalDataArray, function(obj) {
+              return obj.label === propts;
+            }).data.push(couponsshorted[propts][proptc].length)
+          }
+
+        }
+
+        finalDataArray.forEach((element) =>
+          this.lineChartData.push(element));
 
       }
     );
 
-  }
-
-  public randomize():void {
-    let _lineChartData:Array<any> = new Array(this.lineChartData.length);
-    for (let i = 0; i < this.lineChartData.length; i++) {
-      _lineChartData[i] = {data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label};
-      for (let j = 0; j < this.lineChartData[i].data.length; j++) {
-        _lineChartData[i].data[j] = Math.floor((Math.random() * 100) + 1);
-      }
-    }
-    this.lineChartData = _lineChartData;
   }
 
   // events
