@@ -1,6 +1,6 @@
 <div class="row">
 
-    <canvas baseChart
+    <canvas *ngIf="doughnutChartData.length>0" baseChart
             [data]="doughnutChartData"
             [labels]="doughnutChartLabels"
             [chartType]="doughnutChartType"
@@ -10,7 +10,7 @@
 
 <div class="col-md-6">
   <div style="display: block;width: 500px;">
-    <canvas baseChart width="100" height="100"
+    <canvas *ngIf="lineChartData.length>0" baseChart width="100" height="100"
             [datasets]="lineChartData"
             [labels]="lineChartLabels"
             [options]="lineChartOptions"
