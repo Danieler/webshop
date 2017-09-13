@@ -47,6 +47,37 @@ export class LinearchartComponent {
   public lineChartLegend: boolean = true;
   public lineChartType: string = 'line';
 
+  // Doughnut
+  public doughnutChartLabels: Array<any> = [];
+  public doughnutChartData: Array<any> = [];
+  public doughnutChartType:string = 'doughnut';
+
+  public doughnutChartColors: Array<any> = [
+    { // grey
+      backgroundColor: 'rgba(148,159,177,0.2)',
+      borderColor: 'rgba(148,159,177,1)',
+      pointBackgroundColor: 'rgba(148,159,177,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+    },
+    { // dark grey
+      backgroundColor: 'rgba(77,83,96,0.2)',
+      borderColor: 'rgba(77,83,96,1)',
+      pointBackgroundColor: 'rgba(77,83,96,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    },
+    { // grey
+      backgroundColor: 'rgba(148,159,177,0.2)',
+      borderColor: 'rgba(148,159,177,1)',
+      pointBackgroundColor: 'rgba(148,159,177,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+    }];
+
   constructor(public _cs: CouponsService){
     _cs.Coupons.subscribe(
       (data) => {
@@ -77,7 +108,19 @@ export class LinearchartComponent {
         //elimino nulls y ordeno
         couponsvalues = _.compact(_.sortBy(couponsvalues));
 
-        this.lineChartLabels = couponsvalues;//labels del grafico
+        this.lineChartLabels = couponsvalues;//labels del grafico lineal
+
+
+        var doughnutArray = [];
+
+        shops.forEach( element => {
+          doughnutArray.push(_.filter(data['coupons'], { webshop_id: element}).length)
+          this.doughnutChartLabels.push(element);
+        });
+
+
+        this.doughnutChartData = doughnutArray;
+
 
         //agrupo cupones por tienda y valor
         var couponsshorted = {};
